@@ -87,50 +87,56 @@ void freeHeapPrint();
 ****************************************************************************************************************************************************/
 extern "C" void app_main()
 {
-    // initialize arduino library before we start the tasks
-    initArduino();
+  // initialize arduino library before we start the tasks
+  initArduino();
 
-    // Set pin LED status
-    pinMode(PIN_LED_STATUS, OUTPUT);
-    digitalWrite(PIN_LED_STATUS, LOW);
+  // Set pin LED status
+  pinMode(PIN_LED_STATUS, OUTPUT);
+  digitalWrite(PIN_LED_STATUS, LOW);
 
-    // Init UART DEBUG
-    DebugBegin(115200);
-    DebugPrintln();
+  // Init UART DEBUG
+  DebugBegin(115200);
+  DebugPrintln();
 
 // Wait for open Serial Monitor
 #if defined(USE_DEBUG_UART)
-    vTaskDelay(pdMS_TO_TICKS(2000));
+  vTaskDelay(pdMS_TO_TICKS(2000));
 #endif
 
-    // Print Hotname and version
-    DebugPrintln(DEVICE_MODEL " v" FIRMWARE_VERSION);
+  // Print model and version
+  DebugPrintln(DEVICE_MODEL " v" FIRMWARE_VERSION);
 
-    // Task LED status
-    xReturned = xTaskCreatePinnedToCore(
-        pvTaskLED,
-        "LED",                      // Task name (configMAX_TASK_NAME_LEN is 16)
-        TASK_STACK_SIZE_LED_BRLINK, // Stack size (size * configMINIMAL_STACK_SIZE) (ESP32 bytes)
-        NULL,                       // Parameters (NULL | &parameters)
-        TASK_PRIORITY_LED_BLINK,    // Task priority (configUSE_TIME_SLICING + tskIDLE_PRIORITY)
-        &pvTaskHandleLedBlink,           // Task handle (NULL | &handle)
-        tskNO_AFFINITY              // CPU id (PRO_CPU_NUM | APP_CPU_NUM | tskNO_AFFINITY)
-    );
-    if (!verifyTaskCreation(xReturned))
-        ESP.restart();
+  // Print core version
+  DebugPrintln("Core Version: " CORE_VERSION);
+
+  // Print core version
+  DebugPrintln("Chip ID: " MAC_CHIP_HEX);
+
+  // Task LED status
+  xReturned = xTaskCreatePinnedToCore(
+      pvTaskLED,
+      "LED",                      // Task name (configMAX_TASK_NAME_LEN is 16)
+      TASK_STACK_SIZE_LED_BRLINK, // Stack size (size * configMINIMAL_STACK_SIZE) (ESP32 bytes)
+      NULL,                       // Parameters (NULL | &parameters)
+      TASK_PRIORITY_LED_BLINK,    // Task priority (configUSE_TIME_SLICING + tskIDLE_PRIORITY)
+      &pvTaskHandleLedBlink,      // Task handle (NULL | &handle)
+      tskNO_AFFINITY              // CPU id (PRO_CPU_NUM | APP_CPU_NUM | tskNO_AFFINITY)
+  );
+  if (!verifyTaskCreation(xReturned))
+    ESP.restart();
 
 #if defined(USE_DEBUG_HEAP_FREE) && defined(USE_DEBUG_UART)
-    xReturned = xTaskCreatePinnedToCore(
-        pvTaskFreeHeap,
-        "FreeHeap",                     // Task name (configMAX_TASK_NAME_LEN is 16)
-        (3 * configMINIMAL_STACK_SIZE), // Stack size (size * configMINIMAL_STACK_SIZE) (ESP32 bytes)
-        NULL,                           // Parameters (NULL | &parameters)
-        (2 + tskIDLE_PRIORITY),         // Task priority (configUSE_TIME_SLICING + tskIDLE_PRIORITY)
-        &pvTaskHandleFreeHeap,          // Task handle (NULL | &handle)
-        tskNO_AFFINITY                  // CPU id (PRO_CPU_NUM | APP_CPU_NUM | tskNO_AFFINITY)
-    );
-    if (!verifyTaskCreation(xReturned))
-        ESP.restart();
+  xReturned = xTaskCreatePinnedToCore(
+      pvTaskFreeHeap,
+      "FreeHeap",                     // Task name (configMAX_TASK_NAME_LEN is 16)
+      (3 * configMINIMAL_STACK_SIZE), // Stack size (size * configMINIMAL_STACK_SIZE) (ESP32 bytes)
+      NULL,                           // Parameters (NULL | &parameters)
+      (2 + tskIDLE_PRIORITY),         // Task priority (configUSE_TIME_SLICING + tskIDLE_PRIORITY)
+      &pvTaskHandleFreeHeap,          // Task handle (NULL | &handle)
+      tskNO_AFFINITY                  // CPU id (PRO_CPU_NUM | APP_CPU_NUM | tskNO_AFFINITY)
+  );
+  if (!verifyTaskCreation(xReturned))
+    ESP.restart();
 #endif
 }
 
@@ -139,17 +145,19 @@ extern "C" void app_main()
 ****************************************************************************************************************************************************/
 void pvTaskLED(void *pvParameters)
 {
-    // Setup
+  // Setup
 
-    // Loop
-    while (true)
-    {
-        digitalWrite(PIN_LED_STATUS, HIGH);
-        vTaskDelay(pdMS_TO_TICKS(500));
-        digitalWrite(PIN_LED_STATUS, LOW);
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-    vTaskDelete(NULL); // Execution should never get here
+  // Loop
+  while (true)
+  {
+    digitalWrite(PIN_LED_STATUS, HIGH);
+    DebugPrintln("LED: on");
+    vTaskDelay(pdMS_TO_TICKS(500));
+    digitalWrite(PIN_LED_STATUS, LOW);
+    DebugPrintln("LED: off");
+    vTaskDelay(pdMS_TO_TICKS(500));
+  }
+  vTaskDelete(NULL); // Execution should never get here
 }
 
 /****************************************************************************************************************************************************
@@ -158,54 +166,54 @@ void pvTaskLED(void *pvParameters)
 #if defined(USE_DEBUG_HEAP_FREE) && defined(USE_DEBUG_UART)
 void pvTaskFreeHeap(void *pvParameters)
 {
-    // Setup
+  // Setup
 
-    // Loop
-    while (true)
-    {
-        // Inspect our own high water mark of task
-        DebugPrintln(F("---"));
-        stackHighWaterMarkPrint(pvTaskLED, TASK_STACK_SIZE_LED_BRLINK);
-        DebugPrintln(F("---"));
+  // Loop
+  while (true)
+  {
+    // Inspect our own high water mark of task
+    DebugPrintln(F("---"));
+    stackHighWaterMarkPrint(pvTaskLED, TASK_STACK_SIZE_LED_BRLINK);
+    DebugPrintln(F("---"));
 
-        // Inspect freeHeap ESP32
-        freeHeapPrint();
-        vTaskDelay(pdMS_TO_TICKS(60000));
+    // Inspect freeHeap ESP32
+    freeHeapPrint();
+    vTaskDelay(pdMS_TO_TICKS(60000));
 
-        // vTaskDelay(pdMS_TO_TICKS(1)); // Avoid ESP32 panics, allow CPU :)
-    }
-    vTaskDelete(NULL); // Execution should never get here
+    // vTaskDelay(pdMS_TO_TICKS(1)); // Avoid ESP32 panics, allow CPU :)
+  }
+  vTaskDelete(NULL); // Execution should never get here
 }
 
 void stackHighWaterMarkPrint(TaskHandle_t xTask, size_t stackSize)
 {
-    if (xTask != NULL) // Check if task was created
-    {
-        UBaseType_t highWaterMark = uxTaskGetStackHighWaterMark(xTask);
-        float stackSizePercent = (((float)highWaterMark / (float)stackSize) * 100.0);
+  if (xTask != NULL) // Check if task was created
+  {
+    UBaseType_t highWaterMark = uxTaskGetStackHighWaterMark(xTask);
+    float stackSizePercent = (((float)highWaterMark / (float)stackSize) * 100.0);
 
-        DebugPrint(pcTaskGetTaskName(xTask));
-        DebugPrint(F(" high water mark: "));
-        DebugPrint(highWaterMark);
-        DebugPrint(F(" Bytes | "));
-        DebugPrint(stackSizePercent, 2);
-        DebugPrint(F(" %"));
-        DebugPrintln();
-        // DebugPrint(" | Core: ");
-        // DebugPrintln(xPortGetCoreID());
-    }
+    DebugPrint(pcTaskGetTaskName(xTask));
+    DebugPrint(F(" high water mark: "));
+    DebugPrint(highWaterMark);
+    DebugPrint(F(" Bytes | "));
+    DebugPrint(stackSizePercent, 2);
+    DebugPrint(F(" %"));
+    DebugPrintln();
+    // DebugPrint(" | Core: ");
+    // DebugPrintln(xPortGetCoreID());
+  }
 }
 
 void freeHeapPrint()
 {
-    DebugPrintln(F("---"));
-    DebugPrint(F("HeapSize: "));
-    DebugPrint(ESP.getHeapSize());
-    DebugPrintln(F(" Bytes | 100.00 %"));
-    DebugPrint(F("FreeHeap: "));
-    DebugPrint(ESP.getFreeHeap());
-    DebugPrint(F(" Bytes | "));
-    DebugPrint(((float)ESP.getFreeHeap() / (float)ESP.getHeapSize()) * 100.0, 2);
-    DebugPrintln(F(" %"));
+  DebugPrintln(F("---"));
+  DebugPrint(F("HeapSize: "));
+  DebugPrint(ESP.getHeapSize());
+  DebugPrintln(F(" Bytes | 100.00 %"));
+  DebugPrint(F("FreeHeap: "));
+  DebugPrint(ESP.getFreeHeap());
+  DebugPrint(F(" Bytes | "));
+  DebugPrint(((float)ESP.getFreeHeap() / (float)ESP.getHeapSize()) * 100.0, 2);
+  DebugPrintln(F(" %"));
 }
 #endif
