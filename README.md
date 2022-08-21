@@ -1,4 +1,4 @@
-# esp-vscode-boilerplate
+# [PlatformIO Espressif ESP32](https://github.com/platformio/platform-espressif32) — [IDF](https://github.com/espressif/esp-idf) and [Arduino](https://github.com/espressif/arduino-esp32) Boilerplate
 
 ## How to use
 
