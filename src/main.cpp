@@ -87,10 +87,10 @@ void freeHeapPrint();
 ****************************************************************************************************************************************************/
 extern "C" void app_main()
 {
-  // initialize arduino library before we start the tasks
+  // Initialize arduino library before we start the tasks
   initArduino();
 
-  // Set pin LED status
+  // Set pin LED statusS
   pinMode(PIN_LED_STATUS, OUTPUT);
   digitalWrite(PIN_LED_STATUS, LOW);
 
