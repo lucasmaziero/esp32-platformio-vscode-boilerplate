@@ -21,7 +21,7 @@
   SET FEATURES APP
 **************************************************************************/
 // Debugging
-//#define USE_DEBUG_UART
+#define USE_DEBUG_UART
 
 // Debugging HeapFree
 // #define USE_DEBUG_HEAP_FREE
@@ -107,10 +107,10 @@ extern "C" void app_main()
   DebugPrintln(DEVICE_MODEL " v" FIRMWARE_VERSION);
 
   // Print core version
-  DebugPrintln("Core Version: " CORE_VERSION);
+  DebugPrintln("Core Version: " + CORE_VERSION);
 
   // Print core version
-  DebugPrintln("Chip ID: " MAC_CHIP_HEX);
+  DebugPrintln("Chip ID: " + CHIP_ID_MAC_HEX);
 
   // Task LED status
   xReturned = xTaskCreatePinnedToCore(

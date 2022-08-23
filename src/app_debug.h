@@ -5,11 +5,10 @@
 
 #if defined(USE_DEBUG_UART)
 
-#define DEBUG_UART Serial
+#define DEBUG_UART Serial // UART_NUM_0 -> Serial
 #define DebugBegin(...)                      \
   do                                         \
   {                                          \
-    esp_log_level_set("*", ESP_LOG_VERBOSE); \
     DEBUG_UART.begin(__VA_ARGS__);           \
   } while (0)
 
