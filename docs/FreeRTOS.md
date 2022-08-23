@@ -1,9 +1,7 @@
 # [FreeRTOS](https://github.com/platformio/platform-espressif32) — API Reference
 FreeRTOS™ Real-time operating system for microcontrollers
-#
-## `Tasks` 
-#
 
+## `Tasks` 
 - Task Defines
 ```c++
 // Tasks Stack Size
@@ -60,9 +58,7 @@ void pvTaskXXX(void *pvParameters)
 }
 ```
 
-# 
 ## `Event Group` 
-#
 - Event Group Defines
 ```c++
 // Event group BITS
@@ -95,9 +91,7 @@ xEventGroupClearBits(xEventGroup, NETWORK_CONNECTED_BIT);
 xEventGroupWaitBits(xEventGroup, (NETWORK_CONNECTED_BIT | MQTT_CONNECTED_BIT), pdFALSE, pdTRUE, portMAX_DELAY);
 ```
 
-# 
 ## `Queues` 
-#
 - Queue Struct
 ```c++
 // Set struct of queue
@@ -168,9 +162,7 @@ if(xQueuePeek(xQueueXXX, &xxx, pdMS_TO_TICKS(0)))
 }
 ```
 
-#
 ## `Timers` 
-#
 - Timers Handle
 ```c++
 TimerHandle_t xTimerXXX = NULL;
@@ -193,9 +185,7 @@ void onTimerXXX(TimerHandle_t pxTimer)
 }
 ```
 
-#
 ## `Semaphore` 
-#
 - Semaphore Handle
 ```c++
 SemaphoreHandle_t xMutexXXX = NULL;
