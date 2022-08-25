@@ -1,6 +1,6 @@
 # Override some defaults to enable Arduino framework (pio run --target menuconfig --environment esp32dev )
 CONFIG_ENABLE_ARDUINO_DEPENDS=y
-# CONFIG_AUTOSTART_ARDUINO is not set
+CONFIG_AUTOSTART_ARDUINO=n
 CONFIG_ARDUINO_RUN_CORE1=y
 CONFIG_ARDUINO_RUNNING_CORE=1
 CONFIG_ARDUINO_EVENT_RUN_CORE1=y
