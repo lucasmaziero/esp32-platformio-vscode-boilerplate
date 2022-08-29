@@ -55,7 +55,7 @@ void timerDelete(TimerHandle_t handle, TickType_t periodInMillisToWait = 0)
 }
 
 /**************************************************************************
-  ChipID Base on MAC WiFi Mode STA
+  ChipID Base on MAC Default
 **************************************************************************/
 String getChipIdMAC()
 {
