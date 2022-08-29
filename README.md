@@ -19,3 +19,6 @@ cd my-esp32-project
 ```
 code .
 ```
+
+## FreeRTOS API Reference 
+[My FreeRTOS API Guide](https://github.com/lucasmaziero/esp32-platformio-vscode-boilerplate/blob/main/docs/FreeRTOS.md)
