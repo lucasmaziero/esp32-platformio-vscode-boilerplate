@@ -173,7 +173,7 @@ void pvTaskFreeHeap(void *pvParameters)
   {
     // Inspect our own high water mark of task
     DebugPrintln(F("---"));
-    stackHighWaterMarkPrint(pvTaskLedBlink, TASK_STACK_SIZE_LED_BLINK);
+    stackHighWaterMarkPrint(pvTaskHandleLedBlink, TASK_STACK_SIZE_LED_BLINK);
     DebugPrintln(F("---"));
 
     // Inspect freeHeap ESP32
