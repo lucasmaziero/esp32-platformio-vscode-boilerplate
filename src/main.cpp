@@ -44,7 +44,7 @@
   VARIABLES, DEFINITIONS AND STRUCTS
 **************************************************************************/
 // Pin mapping LED
-#define PIN_LED_STATUS 2
+#define PIN_LED_BLINK GPIO_NUM_2
 
 /**************************************************************************
   FREERTOS ELEMENTS
@@ -73,7 +73,7 @@ TaskHandle_t pvTaskHandleFreeHeap = NULL;
   PROTOTYPE OF FUNCTIONS
 **************************************************************************/
 // Tasks
-void pvTaskLED(void *pvParameters);
+void pvTaskLedBlink(void *pvParameters);
 
 // Free Heap Statistic
 #if defined(USE_DEBUG_HEAP_FREE) && defined(USE_DEBUG_UART)
@@ -89,10 +89,6 @@ extern "C" void app_main()
 {
   // Initialize arduino library before we start the tasks
   initArduino();
-
-  // Set pin LED statusS
-  pinMode(PIN_LED_STATUS, OUTPUT);
-  digitalWrite(PIN_LED_STATUS, LOW);
 
   // Init UART DEBUG
   DebugBegin(115200);
@@ -114,8 +110,8 @@ extern "C" void app_main()
 
   // Task LED status
   xReturned = xTaskCreatePinnedToCore(
-      pvTaskLED,
-      "LED",                      // Task name (configMAX_TASK_NAME_LEN is 16)
+      pvTaskLedBlink,
+      "Blink",                      // Task name (configMAX_TASK_NAME_LEN is 16)
       TASK_STACK_SIZE_LED_BRLINK, // Stack size (size * configMINIMAL_STACK_SIZE) (ESP32 bytes)
       NULL,                       // Parameters (NULL | &parameters)
       TASK_PRIORITY_LED_BLINK,    // Task priority (configUSE_TIME_SLICING + tskIDLE_PRIORITY)
@@ -143,17 +139,21 @@ extern "C" void app_main()
 /****************************************************************************************************************************************************
   FUNCTIONS FREERTOS TASKS
 ****************************************************************************************************************************************************/
-void pvTaskLED(void *pvParameters)
+void pvTaskLedBlink(void *pvParameters)
 {
   // Setup
+  // Set pin LED status
+  gpio_pad_select_gpio(PIN_LED_BLINK);
+  gpio_set_direction(PIN_LED_BLINK, GPIO_MODE_OUTPUT);
+  gpio_set_level(PIN_LED_BLINK, 0);
 
   // Loop
   while (true)
   {
-    digitalWrite(PIN_LED_STATUS, HIGH);
+    gpio_set_level(PIN_LED_BLINK, 1);
     DebugPrintln("LED: on");
     vTaskDelay(pdMS_TO_TICKS(500));
-    digitalWrite(PIN_LED_STATUS, LOW);
+    gpio_set_level(PIN_LED_BLINK, 0);
     DebugPrintln("LED: off");
     vTaskDelay(pdMS_TO_TICKS(500));
   }
@@ -173,7 +173,7 @@ void pvTaskFreeHeap(void *pvParameters)
   {
     // Inspect our own high water mark of task
     DebugPrintln(F("---"));
-    stackHighWaterMarkPrint(pvTaskLED, TASK_STACK_SIZE_LED_BRLINK);
+    stackHighWaterMarkPrint(pvTaskLedBlink, TASK_STACK_SIZE_LED_BRLINK);
     DebugPrintln(F("---"));
 
     // Inspect freeHeap ESP32
