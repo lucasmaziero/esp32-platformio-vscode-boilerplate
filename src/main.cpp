@@ -50,7 +50,7 @@
   FREERTOS ELEMENTS
 **************************************************************************/
 // Tasks Stack Size
-#define TASK_STACK_SIZE_LED_BRLINK (2 * configMINIMAL_STACK_SIZE)
+#define TASK_STACK_SIZE_LED_BLINK (2 * configMINIMAL_STACK_SIZE)
 
 // Tasks Priority (use ever priority >= 2)
 #define TASK_PRIORITY_LED_BLINK (2 + tskIDLE_PRIORITY)
@@ -112,7 +112,7 @@ extern "C" void app_main()
   xReturned = xTaskCreatePinnedToCore(
       pvTaskLedBlink,
       "Blink",                      // Task name (configMAX_TASK_NAME_LEN is 16)
-      TASK_STACK_SIZE_LED_BRLINK, // Stack size (size * configMINIMAL_STACK_SIZE) (ESP32 bytes)
+      TASK_STACK_SIZE_LED_BLINK, // Stack size (size * configMINIMAL_STACK_SIZE) (ESP32 bytes)
       NULL,                       // Parameters (NULL | &parameters)
       TASK_PRIORITY_LED_BLINK,    // Task priority (configUSE_TIME_SLICING + tskIDLE_PRIORITY)
       &pvTaskHandleLedBlink,      // Task handle (NULL | &handle)
@@ -173,7 +173,7 @@ void pvTaskFreeHeap(void *pvParameters)
   {
     // Inspect our own high water mark of task
     DebugPrintln(F("---"));
-    stackHighWaterMarkPrint(pvTaskLedBlink, TASK_STACK_SIZE_LED_BRLINK);
+    stackHighWaterMarkPrint(pvTaskLedBlink, TASK_STACK_SIZE_LED_BLINK);
     DebugPrintln(F("---"));
 
     // Inspect freeHeap ESP32
