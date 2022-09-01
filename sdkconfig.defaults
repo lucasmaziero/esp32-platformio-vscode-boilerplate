@@ -17,6 +17,13 @@ CONFIG_ARDUINO_SELECTIVE_WiFi=y
 CONFIG_MBEDTLS_PSK_MODES=y
 CONFIG_MBEDTLS_KEY_EXCHANGE_PSK=y
 
+# Override some defaults to SPIFFS
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions/app_4m_ota.csv"
+CONFIG_PARTITION_TABLE_FILENAME="partitions/app_4m_ota.csv"
+CONFIG_PARTITION_TABLE_OFFSET=0x8000
+CONFIG_PARTITION_TABLE_MD5=y
+
 # Override some defaults to Log output
 # Log options: NONE | ERROR | WARN | INFO (default) | DEBUG | VERBOSE
 # https://espressif-docs.readthedocs-hosted.com/projects/espressif-esp-faq/en/latest/development-environment/debugging.html
