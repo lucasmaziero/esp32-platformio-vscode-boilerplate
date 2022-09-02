@@ -1,3 +1,5 @@
+# PlatformIO Menuconfig IDF: pio run --target menuconfig --environment esp32dev
+
 # Override some defaults to enable Arduino framework (pio run --target menuconfig --environment esp32dev )
 CONFIG_ENABLE_ARDUINO_DEPENDS=y
 CONFIG_AUTOSTART_ARDUINO=n
