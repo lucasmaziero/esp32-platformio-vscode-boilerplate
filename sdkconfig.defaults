@@ -33,7 +33,3 @@ CONFIG_PARTITION_TABLE_MD5=y
 # make menuconfig > Component config > Log output
 CONFIG_BOOTLOADER_LOG_LEVEL_INFO=y
 CONFIG_LOG_DEFAULT_LEVEL_INFO=y
-
-
-
-
