@@ -49,7 +49,7 @@
   FREERTOS ELEMENTS
 **************************************************************************/
 // Tasks Stack Size
-#define TASK_STACK_SIZE_LED_BLINK (2 * configMINIMAL_STACK_SIZE)
+#define TASK_STACK_SIZE_LED_BLINK (3 * configMINIMAL_STACK_SIZE)
 
 // Tasks Priority (use ever priority >= 2)
 #define TASK_PRIORITY_LED_BLINK (2 + tskIDLE_PRIORITY)
