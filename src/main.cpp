@@ -23,11 +23,11 @@
 // Debugging FreeHeap
 //#define USE_DEBUG_TASK_FREEHEAP
 
-// Device model
-#define DEVICE_MODEL "ESP32-IDF-ARDUINO-BRLINK"
+// Device name
+#define DEVICE_NAME "ESP32-IDF-ARDUINO-BRLINK"
 
 // Firmware version
-#define FIRMWARE_VERSION "1.0"
+#define FIRMWARE_VERSION "0.0"
 
 // Set tag for debug
 #define TAG_DEBUG_DEVICE "[DEVICE]"
@@ -54,13 +54,10 @@
 // Tasks Priority (use ever priority >= 2)
 #define TASK_PRIORITY_LED_BLINK (2 + tskIDLE_PRIORITY)
 
-// Task BaseType
-BaseType_t xReturned;
-
 // Tasks Handle
 TaskHandle_t pvTaskHandleLedBlink = NULL;
 
-#if defined(USE_DEBUG_TASK_FREEHEAP) && !defined(CONFIG_BOOTLOADER_LOG_LEVEL_NONE)
+#if defined(USE_DEBUG_TASK_FREEHEAP) && !defined(CONFIG_LOG_DEFAULT_LEVEL_NONE)
 TaskHandle_t pvTaskHandleFreeHeap = NULL;
 #endif
 
@@ -75,7 +72,7 @@ TaskHandle_t pvTaskHandleFreeHeap = NULL;
 void pvTaskLedBlink(void *pvParameters);
 
 // Free Heap Statistic
-#if defined(USE_DEBUG_TASK_FREEHEAP) && !defined(CONFIG_BOOTLOADER_LOG_LEVEL_NONE)
+#if defined(USE_DEBUG_TASK_FREEHEAP) && !defined(CONFIG_LOG_DEFAULT_LEVEL_NONE)
 void pvTaskFreeHeap(void *pvParameters);
 void stackHighWaterMarkPrint(TaskHandle_t xTask, size_t stackSize);
 void freeHeapPrint();
@@ -89,12 +86,13 @@ extern "C" void app_main()
   // Initialize arduino library before we start the tasks
   initArduino();
 
-  // Print model and version
-  ESP_LOGI(TAG_DEBUG_DEVICE, DEVICE_MODEL " v" FIRMWARE_VERSION);
+  // Task BaseType
+  BaseType_t xReturned = pdFAIL;
 
+  // Print model and version
+  ESP_LOGI(TAG_DEBUG_DEVICE, "%s v%s,", DEVICE_NAME, FIRMWARE_VERSION);
   // Print core version
   ESP_LOGI(TAG_DEBUG_DEVICE, "Core Version: %s", CORE_VERSION.c_str());
-
   // Print core version
   ESP_LOGI(TAG_DEBUG_DEVICE, "Chip ID: %s", CHIP_ID_MAC_HEX.c_str());
 
@@ -111,7 +109,7 @@ extern "C" void app_main()
   if (!verifyTaskCreation(xReturned))
     ESP.restart();
 
-#if defined(USE_DEBUG_TASK_FREEHEAP) && !defined(CONFIG_BOOTLOADER_LOG_LEVEL_NONE)
+#if defined(USE_DEBUG_TASK_FREEHEAP) && !defined(CONFIG_LOG_DEFAULT_LEVEL_NONE)
   xReturned = xTaskCreatePinnedToCore(
       pvTaskFreeHeap,
       "FreeHeap",                     // Task name (configMAX_TASK_NAME_LEN is 16)
@@ -153,7 +151,7 @@ void pvTaskLedBlink(void *pvParameters)
 /****************************************************************************************************************************************************
   FUNCTIONS FREE HEAP
 ****************************************************************************************************************************************************/
-#if defined(USE_DEBUG_TASK_FREEHEAP) && !defined(CONFIG_BOOTLOADER_LOG_LEVEL_NONE)
+#if defined(USE_DEBUG_TASK_FREEHEAP) && !defined(CONFIG_LOG_DEFAULT_LEVEL_NONE)
 void pvTaskFreeHeap(void *pvParameters)
 {
   // Setup
@@ -163,7 +161,7 @@ void pvTaskFreeHeap(void *pvParameters)
   {
     // Inspect our own high water mark of task
     ESP_LOGI("[FREEHEAP]", "---");
-    stackHighWaterMarkPrint(pvTaskHandleFreeHeap, TASK_STACK_SIZE_LED_BLINK);
+    stackHighWaterMarkPrint(pvTaskHandleLedBlink, TASK_STACK_SIZE_LED_BLINK);
     ESP_LOGI("[FREEHEAP]", "---");
 
     // Inspect freeHeap ESP32
@@ -171,7 +169,7 @@ void pvTaskFreeHeap(void *pvParameters)
     freeHeapPrint();
     ESP_LOGI("[FREEHEAP]", "---");
 
-    vTaskDelay(pdMS_TO_TICKS(60000)); // Avoid ESP32 panics, allow CPU :)
+    vTaskDelay(pdMS_TO_TICKS(30000)); // Avoid ESP32 panics, allow CPU :)
   }
   vTaskDelete(NULL); // Execution should never get here
 }
