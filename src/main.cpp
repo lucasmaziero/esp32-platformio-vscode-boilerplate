@@ -96,6 +96,15 @@ extern "C" void app_main()
   // Print core version
   ESP_LOGI(TAG_DEBUG_DEVICE, "Chip ID: %s", CHIP_ID_MAC_HEX.c_str());
 
+    // Init "esp_netif" and "default event loop"
+  if (espNetifAndEventloopInit())
+    ESP_LOGI(TAG_DEBUG_DEVICE, "Init Netif and EventLoop Ok!");
+  else
+  {
+    ESP_LOGE(TAG_DEBUG_DEVICE, "Init Netif and EventLoop Fail!");
+    systemRestart();
+  }
+
   // Task LED status
   xReturned = xTaskCreatePinnedToCore(
       pvTaskLedBlink,

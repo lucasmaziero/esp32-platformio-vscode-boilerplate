@@ -1,0 +1,2 @@
+app_4m_ota.csv      -> app0=1.3M, app1=1.3M, SPIFFS=1.4M
+app_4m_no_ota.csv   -> app0=1.3M, app1=0M, SPIFFS=2.7M

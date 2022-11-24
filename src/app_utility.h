@@ -17,6 +17,18 @@
 Ticker timer;
 
 /**************************************************************************
+  ESP init "esp_netif" and "default event loop" used in (WiFi | PPP | MQTT | HTTP ...)
+**************************************************************************/
+bool espNetifAndEventloopInit()
+{
+    if (esp_netif_init() != ESP_OK)
+        return false;
+    if (esp_event_loop_create_default() != ESP_OK)
+        return false;
+    return true;
+}
+
+/**************************************************************************
   FreeRTOS Elements Check Creation
 **************************************************************************/
 // Verify task creation FreeRTOS (Tasks)
