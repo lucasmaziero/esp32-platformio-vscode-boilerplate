@@ -1,2 +1,4 @@
-app_4m_ota.csv      -> app0=1.3M, app1=1.3M, SPIFFS=1.4M
-app_4m_no_ota.csv   -> app0=1.3M, app1=0M, SPIFFS=2.7M
+default_app_4m_ota.csv      -> app0=1.3M, app1=1.3M, SPIFFS=1.4M
+default_app_4m_no_ota.csv   -> app0=1.3M, app1=0M, SPIFFS=2.7M
+custom_app_4m_ota.csv       -> app0=1.5M, app1=1.5M, SPIFFS=1M
+custom_app_16m_ota.csv      -> app0=3M, app1=3M, SPIFFS=10M

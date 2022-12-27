@@ -7,6 +7,11 @@
 
 #define TAG_DEBUG_APP_UTILITY_TIMER_RESET "[TIMER RESET]"
 
+// Defines time base
+#define APP_TIMER_SECOND 1000UL
+#define APP_TIMER_MINUTE 60000UL
+#define APP_TIMER_HOUR 3600000UL
+
 // Defines most usad
 #define MILLIS() (xTaskGetTickCount() * portTICK_PERIOD_MS) // Equivalent to "millis()" function
 #define CHIP_ID_MAC_HEX getChipIdMAC()
@@ -51,9 +56,9 @@ bool verifyComponentCreation(T componentHandle_t)
 /**************************************************************************
   Timers Software
 **************************************************************************/
-TimerHandle_t timerCreate(const char *name, TickType_t periodInMillis, TimerCallbackFunction_t callbackFunction)
+TimerHandle_t timerCreate(const char *name, TickType_t periodInMillis, TimerCallbackFunction_t callbackFunction, UBaseType_t autoReload = pdTRUE)
 {
-    return xTimerCreate(name, pdMS_TO_TICKS(periodInMillis), pdTRUE, 0, callbackFunction);
+    return xTimerCreate(name, pdMS_TO_TICKS(periodInMillis), autoReload, 0, callbackFunction);
 }
 
 void timerStart(TimerHandle_t handle, TickType_t periodInMillisToWait = 0)
@@ -66,6 +71,12 @@ void timerStop(TimerHandle_t handle, TickType_t periodInMillisToWait = 0)
 {
     if (handle != NULL)
         xTimerStop(handle, pdMS_TO_TICKS(periodInMillisToWait));
+}
+
+void timerChangePeriod(TimerHandle_t handle, TickType_t periodInMillis, TickType_t periodInMillisToWait = 0)
+{
+    if ((handle != NULL) && (periodInMillis > 0))
+        xTimerChangePeriod(handle, periodInMillis, periodInMillisToWait);
 }
 
 void timerDelete(TimerHandle_t handle, TickType_t periodInMillisToWait = 0)
