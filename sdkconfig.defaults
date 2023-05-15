@@ -25,6 +25,9 @@ CONFIG_FREERTOS_HZ=1000
 # Override some defaults to ESP System
 CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
 
+# Override some defaults to Watchdog timer
+CONFIG_ESP_TASK_WDT_TIMEOUT_S=15
+
 # Override some defaults to Partition Table
 CONFIG_PARTITION_TABLE_CUSTOM=y
 CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions/partitions.csv"

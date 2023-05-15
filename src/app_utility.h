@@ -2,10 +2,14 @@
 #define app_utility_h
 
 #include <Arduino.h>  // ESP32 Arduino native library
+#include <WiFi.h>     // ESP32 Arduino native library
 #include <esp_wifi.h> // ESP32 IDF native library
 #include <Ticker.h>   // ESP32 Arduino native library
 
 #define TAG_DEBUG_APP_UTILITY_TIMER_RESET "[TIMER RESET]"
+
+// Used check time system is synced
+#define TIME_YEARS_DIFFERENCE_CHECK (2020 - 1900) // Is time set? If not, tm_year will be (1970 - 1900).
 
 // Defines time base
 #define APP_TIMER_SECOND 1000UL
@@ -14,12 +18,14 @@
 
 // Defines most usad
 #define MILLIS() (xTaskGetTickCount() * portTICK_PERIOD_MS) // Equivalent to "millis()" function
-#define CHIP_ID_MAC_HEX getChipIdMAC()
+#define CHIP_ID_STA_MAC_HEX getChipIdMAC(WIFI_IF_STA)
+#define CHIP_ID_AP_MAC_HEX getChipIdMAC(WIFI_IF_AP)
+
 #define STA_MAC_HEX getMacAddress()
 #define CORE_VERSION getCoreVersion()
 
 // Ticker Object
-Ticker timer;
+Ticker _timerRestart;
 
 /**************************************************************************
   ESP init "esp_netif" and "default event loop" used in (WiFi | PPP | MQTT | HTTP ...)
@@ -75,8 +81,13 @@ void timerStop(TimerHandle_t handle, TickType_t periodInMillisToWait = 0)
 
 void timerChangePeriod(TimerHandle_t handle, TickType_t periodInMillis, TickType_t periodInMillisToWait = 0)
 {
-    if ((handle != NULL) && (periodInMillis > 0))
-        xTimerChangePeriod(handle, periodInMillis, periodInMillisToWait);
+    if (handle != NULL)
+    {
+        if (periodInMillis > 0)
+            xTimerChangePeriod(handle, periodInMillis, periodInMillisToWait);
+        else
+            xTimerStop(handle, pdMS_TO_TICKS(periodInMillisToWait));
+    }
 }
 
 void timerDelete(TimerHandle_t handle, TickType_t periodInMillisToWait = 0)
@@ -88,18 +99,16 @@ void timerDelete(TimerHandle_t handle, TickType_t periodInMillisToWait = 0)
 /**************************************************************************
   ChipID Base on MAC Default
 **************************************************************************/
-String getChipIdMAC()
+String getChipIdMAC(wifi_interface_t ifx)
 {
-    char macStr[13] = {0};
-    uint8_t id[6] = {0};
-    uint64_t chipid = ESP.getEfuseMac();
-    id[0] = chipid;
-    id[1] = chipid >> 8;
-    id[2] = chipid >> 16;
-    id[3] = chipid >> 24;
-    id[4] = chipid >> 32;
-    id[5] = chipid >> 40;
-    sprintf(macStr, "%02x%02x%02x%02x%02x%02x", id[0], id[1], id[2], id[3], id[4], id[5]); // https://cplusplus.com/reference/cstdio/printf
+    uint8_t mac[6];
+    char macStr[18] = {0};
+    if ((WiFiGenericClass::getMode() == WIFI_MODE_NULL) || (ifx == WIFI_IF_STA))
+        esp_efuse_mac_get_default(mac);
+    else
+        esp_wifi_get_mac(ifx, mac);
+
+    sprintf(macStr, "%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     return String(macStr);
 }
 
@@ -141,7 +150,7 @@ void systemRestart(uint32_t ms = 0, const char *msg = NULL)
     if (msg != NULL)
         ESP_LOGI(TAG_DEBUG_APP_UTILITY_TIMER_RESET, "%s", msg);
     if (ms > 0)
-        timer.once_ms(ms, esp_restart); // Reset Non-blocking
+        _timerRestart.once_ms(ms, esp_restart); // Reset Non-blocking
     else
         esp_restart();
 }

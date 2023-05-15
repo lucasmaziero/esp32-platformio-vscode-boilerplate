@@ -12,7 +12,7 @@
 **************************************************************************
   Version: 0.0
   Date: 19/08/2022
-  Modified: XX/XX/20XX
+  Modified: 15/05/2023
 **************************************************************************
  Copyright(c) by: Fox IoT.
 **************************************************************************/
@@ -94,7 +94,7 @@ extern "C" void app_main()
   // Print core version
   ESP_LOGI(TAG_DEBUG_DEVICE, "Core Version: %s", CORE_VERSION.c_str());
   // Print core version
-  ESP_LOGI(TAG_DEBUG_DEVICE, "Chip ID: %s", CHIP_ID_MAC_HEX.c_str());
+  ESP_LOGI(TAG_DEBUG_DEVICE, "Chip ID: %s", CHIP_ID_STA_MAC_HEX.c_str());
 
     // Init "esp_netif" and "default event loop"
   if (espNetifAndEventloopInit())
